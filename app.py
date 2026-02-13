@@ -13,6 +13,7 @@ from models import db, User, Item, Category, Match, Report
 from forms import RegistrationForm, LoginForm, ItemForm, ReportForm, ClaimForm
 
 app = Flask(__name__)
+# Git sync check
 app.config['SECRET_KEY'] = 'your_secret_key_here' # Keep this safe!
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site_v3.db'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
