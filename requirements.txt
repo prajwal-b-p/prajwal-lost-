@@ -5,3 +5,4 @@ Flask-WTF
 email-validator
 werkzeug
 gunicorn
+psycopg2-binary
