@@ -124,10 +124,26 @@ def post_item():
     form = ItemForm()
     # Populate categories dynamically
     form.category.choices = [(c.id, c.name) for c in Category.query.all()]
+
+    # Pre-fill from query params (e.g. if redirected from claim page)
+    if request.method == 'GET':
+        if request.args.get('type'):
+            form.type.data = request.args.get('type')
+        if request.args.get('category'):
+            try:
+                form.category.data = int(request.args.get('category'))
+            except ValueError:
+                pass
     
     if form.validate_on_submit():
         # Handle image: prefer camera capture, fall back to file upload
         camera_data = request.form.get('camera_image')
+        
+        # MANDATORY IMAGE CHECK
+        if not camera_data and not form.image.data:
+            flash('You must provide an image (upload or camera) to post an item.', 'danger')
+            return render_template('post_item.html', title='Post Item', form=form)
+
         if camera_data:
             pic_file = save_base64_picture(camera_data)
         else:
@@ -162,7 +178,18 @@ def dashboard():
 @app.route("/item/<int:item_id>")
 def item_detail(item_id):
     item = Item.query.get_or_404(item_id)
-    return render_template('item_detail.html', item=item)
+    
+    # Logic for Claim Flow: Check if current user has a matching LOST item
+    matching_lost_items = []
+    if current_user.is_authenticated and item.type == 'FOUND' and item.status == 'OPEN':
+        matching_lost_items = Item.query.filter_by(
+            user_id=current_user.id, 
+            type='LOST', 
+            status='OPEN', 
+            category_id=item.category_id
+        ).all()
+        
+    return render_template('item_detail.html', item=item, matching_lost_items=matching_lost_items)
 
 @app.route("/search")
 def search():

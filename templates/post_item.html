@@ -239,5 +239,19 @@
             cameraStream = null;
         }
     }
+    // Form Validation
+    document.getElementById('postItemForm').addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('fileInput');
+        const cameraInput = document.getElementById('cameraImageData');
+
+        if (!fileInput.files.length && !cameraInput.value) {
+            e.preventDefault();
+            alert('Please upload an image or take a photo to post an item.');
+            // Highlight the upload area
+            document.querySelector('.upload-area').style.border = '2px solid var(--bs-danger)';
+            document.querySelector('.upload-area').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
 </script>
 {% endblock %}

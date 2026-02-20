@@ -26,6 +26,8 @@
                     <li class="nav-item"><a class="nav-link btn btn-primary text-white ms-3 px-4"
                             href="{{ url_for('post_item') }}">Post Item</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="nav-item d-flex align-items-center"><span class="nav-link fw-bold text-dark disabled">Hi,
+                            {{ current_user.username }}</span></li>
                     <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('logout') }}"><i
                                 class="bi bi-box-arrow-right"></i> Logout</a></li>
                     {% else %}

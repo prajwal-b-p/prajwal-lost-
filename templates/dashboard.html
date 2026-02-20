@@ -84,8 +84,8 @@
                     <span><i class="bi bi-calendar me-1"></i>{{ item.created_at.strftime('%b %d') }}</span>
                 </div>
 
-                <!-- Verification code for LOST items only -->
-                {% if item.type == 'LOST' and item.verification_code %}
+                <!-- Verification Code for LOST items only - STRICT SECURITY CHECK -->
+                {% if item.type == 'LOST' and item.verification_code and item.user_id == current_user.id %}
                 <div class="verification-code-box-sm mb-3">
                     <small class="text-uppercase fw-bold text-primary d-block"
                         style="font-size: 0.65rem; letter-spacing: 1px;">

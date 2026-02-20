@@ -124,6 +124,7 @@
                         </div>
 
                         <!-- Action Buttons -->
+                        <!-- Action Buttons -->
                         <div class="d-grid gap-2">
                             {% if item.status == 'CLAIMED' %}
                             <button class="btn btn-lg btn-outline-secondary" disabled>
@@ -140,19 +141,78 @@
                             <small class="text-center text-muted">Click here to verify the code provided by the
                                 claimant.</small>
                             {% else %}
-                            <button class="btn btn-secondary btn-lg" disabled>
+                            <div class="alert alert-secondary mb-0 text-center">
                                 <i class="bi bi-person-check me-2"></i>This is your post
-                            </button>
+                            </div>
                             {% endif %}
                             {% else %}
                             <!-- Non-Owner Actions -->
+                            {% if item.type == 'FOUND' %}
+                            {% if matching_lost_items %}
+                            <!-- SCENARIO: User has a potential matching LOST item -->
+                            <div class="card border-success bg-success bg-opacity-10 mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success fw-bold"><i class="bi bi-stars me-2"></i>Possbile
+                                        Match!</h5>
+                                    <p class="card-text small">You have reported a lost item in this category.</p>
+
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-success" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#verificationCodes">
+                                            View Verification Codes
+                                        </button>
+                                    </div>
+
+                                    <div class="collapse mt-3" id="verificationCodes">
+                                        {% for lost in matching_lost_items %}
+                                        {% if lost.user_id == current_user.id %}
+                                        <div class="bg-white p-3 rounded border mb-2">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-bold text-dark">{{ lost.title }}</span>
+                                                <span class="badge bg-secondary">{{ lost.created_at.strftime('%b %d')
+                                                    }}</span>
+                                            </div>
+                                            <div class="verification-code-text text-center border rounded bg-light p-2 mb-2 user-select-all"
+                                                style="font-family: monospace; letter-spacing: 2px; font-weight: bold; color: var(--primary-color);">
+                                                {{ lost.verification_code }}
+                                            </div>
+                                            <small class="d-block text-muted text-center"
+                                                style="font-size: 0.75rem;">Give this code to the finder</small>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                             <a href="mailto:{{ item.user.email }}" class="btn btn-primary btn-lg shadow-sm">
-                                <i class="bi bi-envelope-fill me-2"></i>Contact {{ item.type == 'FOUND' and 'Finder' or
-                                'Owner' }}
+                                <i class="bi bi-envelope-fill me-2"></i>Contact Finder
+                            </a>
+                            {% else %}
+                            <!-- SCENARIO: User has NO matching LOST item -->
+                            <div class="card border-warning bg-warning bg-opacity-10 mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-dark fw-bold">Is this your item?</h5>
+                                    <p class="card-text small text-muted">To secure your claim, please report your lost
+                                        item first. This generates a secure verification code.</p>
+                                    <a href="{{ url_for('post_item', type='LOST', category=item.category_id) }}"
+                                        class="btn btn-warning text-dark fw-bold w-100">
+                                        <i class="bi bi-file-earmark-plus me-2"></i>Report My Lost Item
+                                    </a>
+                                </div>
+                            </div>
+                            <a href="mailto:{{ item.user.email }}" class="btn btn-outline-primary shadow-sm">
+                                <i class="bi bi-envelope me-2"></i>Contact Finder
+                            </a>
+                            {% endif %}
+                            {% else %}
+                            <!-- Item is LOST, user is just browsing -->
+                            <a href="mailto:{{ item.user.email }}" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-envelope-fill me-2"></i>Contact Owner
                             </a>
                             <a href="{{ url_for('report_item', item_id=item.id) }}" class="btn btn-outline-danger">
                                 <i class="bi bi-flag me-1"></i>Report
                             </a>
+                            {% endif %}
                             {% endif %}
                             {% else %}
                             <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg shadow-sm">
